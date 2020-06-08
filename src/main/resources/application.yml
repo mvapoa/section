@@ -1,0 +1,9 @@
+spring:
+   application:
+      name: section
+   h2:
+      console:
+         enabled: true
+         path: /h2
+server:
+   port: 9002
