@@ -1,26 +1,30 @@
 package br.com.sicredi.challenge.section.service;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.modelmapper.ModelMapper;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 import br.com.sicredi.challenge.section.dao.ResultRepository;
+import br.com.sicredi.challenge.section.dto.ResultResponseDto;
 import br.com.sicredi.challenge.section.entity.Result;
 import br.com.sicredi.challenge.section.entity.Session;
-import br.com.sicredi.challenge.section.exception.BusinessException;
 
+@Service
 public class ResultServiceImpl implements ResultService {
 
-	@Value("${javainuse.rabbitmq.exchange}")
-	private String exchange;
+	@Value("${rabbitmq.queues.exchange}")
+	private String rabbitExchange;
 
-	@Value("${javainuse.rabbitmq.routingkey}")
-	private String routingkey;
+	@Value("${rabbitmq.queues.routingkey}")
+	private String rabbitRoutineKey;
 
 	@Autowired
 	private AmqpTemplate rabbitTemplate;
@@ -31,40 +35,81 @@ public class ResultServiceImpl implements ResultService {
 	@Autowired
 	private SessionService service;
 
-	public Result findResult(Long id) {
+	@Autowired
+	private ModelMapper modelMapper;
 
-		Optional<Result> result = repository.findById(id);
-		return Optional.of(result.get()).orElseThrow(() -> new BusinessException("${error.result.not.found}"));
+	@Override
+	public Result findResultByIdSession(Long idSession) {
+
+		Session session = service.findSession(idSession);
+
+		if (checkSessionIsOpen(session)) {
+			throw new InvalidParameterException("error.session.is.open");
+		}
+
+		if (!checkSessionHasBeenProcessed(session)) {
+			throw new InvalidParameterException("error.session.has.not.been.processed");
+		}
+
+		return findResult(session);
 	}
 
+	@Override
+	public Result findResult(Session session) {
+
+		Optional<Result> result = repository.findBySession(session);
+		if (!result.isPresent()) {
+			throw new InvalidParameterException("error.result.not.found");
+		}
+		return result.get();
+	}
+
+	@Override
 	public void closeSessions() {
 
-		Boolean closed = Boolean.FALSE;
+		Boolean processed = Boolean.FALSE;
 		LocalDateTime closeTime = LocalDateTime.now();
 
-		Set<Session> sessions = service.findAllSessionByClosedAndCloseTime(closed, closeTime);
+		Set<Session> sessions = service.findAllSessionByProcessedAndCloseTime(processed, closeTime);
 		for (Session session : sessions) {
 
 			Result result = closeSession(session);
-			rabbitTemplate.convertAndSend(exchange, routingkey, result);
+			ResultResponseDto response = modelMapper.map(result, ResultResponseDto.class);
+			rabbitTemplate.convertAndSend(rabbitExchange, rabbitRoutineKey, response);
 		}
 
 	}
 
+	@Override
 	public Result closeSession(Session session) {
 
-		Integer totalTrue = session.getVotes().stream().filter(v -> v.getVote().equals(Boolean.TRUE))
-				.collect(Collectors.toSet()).size();
-		Integer totalFalse = session.getVotes().stream().filter(v -> v.getVote().equals(Boolean.FALSE))
-				.collect(Collectors.toSet()).size();
+		Integer totalTrue = session.getVotes().stream()
+				.filter(v -> v.getVote().equals(Boolean.TRUE))
+				.collect(Collectors.toSet())
+				.size();
+		Integer totalFalse = session.getVotes().stream()
+				.filter(v -> v.getVote().equals(Boolean.FALSE))
+				.collect(Collectors.toSet())
+				.size();
 		Boolean winner = totalTrue >= totalFalse;
 
 		Result result = new Result();
-		result.setSession(session);
+		result.setSession(service.closeSession(session));
 		result.setWinner(winner);
 		result.setTotalTrue(totalTrue);
 		result.setTotalFalse(totalFalse);
 		return repository.save(result);
+	}
+
+	private boolean checkSessionIsOpen(Session session) {
+
+		LocalDateTime now = LocalDateTime.now();
+		return now.isBefore(session.getCloseTime());
+	}
+
+	private boolean checkSessionHasBeenProcessed(Session session) {
+
+		return session.getProcessed();
 	}
 
 }

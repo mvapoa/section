@@ -28,7 +28,7 @@ public class Session implements Serializable {
 	@JoinColumn(name = "agenda_id")
 	private Agenda agenda;
 
-	@OneToMany(mappedBy = "session")
+	@OneToMany(mappedBy = "session", fetch = FetchType.EAGER)
 	private Set<Vote> votes;
 
 	@Column(name = "OPEN_TIME", nullable = false)
@@ -37,22 +37,22 @@ public class Session implements Serializable {
 	@Column(name = "CLOSE_TIME", nullable = false)
 	private LocalDateTime closeTime;
 
-	@Column(name = "CLOSED", nullable = false)
-	private Boolean closed;
+	@Column(name = "PROCESSED", nullable = false)
+	private Boolean processed;
 
 	public Session() {
 		super();
 	}
 
 	public Session(Long id, Agenda agenda, Set<Vote> votes, LocalDateTime openTime, LocalDateTime closeTime,
-			Boolean closed) {
+			Boolean processed) {
 		super();
 		this.id = id;
 		this.agenda = agenda;
 		this.votes = votes;
 		this.openTime = openTime;
 		this.closeTime = closeTime;
-		this.closed = closed;
+		this.processed = processed;
 	}
 
 	public Long getId() {
@@ -95,12 +95,12 @@ public class Session implements Serializable {
 		this.closeTime = closeTime;
 	}
 
-	public Boolean getClosed() {
-		return closed;
+	public Boolean getProcessed() {
+		return processed;
 	}
 
-	public void setClosed(Boolean closed) {
-		this.closed = closed;
+	public void setProcessed(Boolean processed) {
+		this.processed = processed;
 	}
 
 	@Override
@@ -131,7 +131,7 @@ public class Session implements Serializable {
 	@Override
 	public String toString() {
 		return "Session [id=" + id + ", agenda=" + agenda + ", votes=" + votes + ", openTime=" + openTime
-				+ ", closeTime=" + closeTime + ", closed=" + closed + "]";
+				+ ", closeTime=" + closeTime + ", processed=" + processed + "]";
 	}
 
 }

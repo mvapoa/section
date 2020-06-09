@@ -3,11 +3,12 @@ package br.com.sicredi.challenge.section.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class SessionResponseDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// TODO Change o name of id
 	private Long id;
 
 	private LocalDateTime openTime;
@@ -25,6 +26,7 @@ public class SessionResponseDto implements Serializable {
 		this.closeTime = closeTime;
 	}
 
+	@JsonProperty("code")
 	public Long getId() {
 		return id;
 	}

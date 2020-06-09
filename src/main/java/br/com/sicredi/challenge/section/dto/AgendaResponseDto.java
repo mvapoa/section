@@ -2,11 +2,12 @@ package br.com.sicredi.challenge.section.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class AgendaResponseDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// TODO Change o name of id
 	private Long id;
 
 	private String title;
@@ -24,6 +25,7 @@ public class AgendaResponseDto implements Serializable {
 		this.description = description;
 	}
 
+	@JsonProperty("code")
 	public Long getId() {
 		return id;
 	}

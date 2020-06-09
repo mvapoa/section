@@ -15,6 +15,6 @@ public interface SessionRepository extends JpaRepository<Session, Long> {
 
 	public Optional<Session> findByAgenda(Agenda agenda);
 
-	public Set<Session> findAllByClosedAndCloseTimeLessThanEqual(Boolean closed, LocalDateTime closeTime);
+	public Set<Session> findAllByProcessedAndCloseTimeLessThanEqual(Boolean processed, LocalDateTime closeTime);
 
 }

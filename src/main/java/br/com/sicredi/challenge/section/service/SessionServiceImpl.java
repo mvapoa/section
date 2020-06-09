@@ -1,16 +1,18 @@
 package br.com.sicredi.challenge.section.service;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.Set;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import br.com.sicredi.challenge.section.dao.SessionRepository;
 import br.com.sicredi.challenge.section.entity.Agenda;
 import br.com.sicredi.challenge.section.entity.Session;
-import br.com.sicredi.challenge.section.exception.BusinessException;
 
+@Service
 public class SessionServiceImpl implements SessionService {
 
 	@Autowired
@@ -22,7 +24,7 @@ public class SessionServiceImpl implements SessionService {
 	@Override
 	public Session openSession(Long idAgenda) {
 
-		LocalDateTime closeTime = LocalDateTime.now().plusMinutes(1l);
+		LocalDateTime closeTime = LocalDateTime.now().plusMinutes(1);
 		return openSession(idAgenda, closeTime);
 	}
 
@@ -32,13 +34,14 @@ public class SessionServiceImpl implements SessionService {
 		Agenda agenda = service.findAgenda(idAgenda);
 
 		if (hasSessionByAgenda(agenda)) {
-			throw new BusinessException("${error.session.already.exist}");
+			throw new InvalidParameterException("error.session.already.exist");
 		}
 
 		Session session = new Session();
 		session.setAgenda(agenda);
 		session.setOpenTime(LocalDateTime.now());
 		session.setCloseTime(closeTime);
+		session.setProcessed(Boolean.FALSE);
 		return repository.save(session);
 	}
 
@@ -53,13 +56,23 @@ public class SessionServiceImpl implements SessionService {
 	public Session findSession(Long id) {
 
 		Optional<Session> session = repository.findById(id);
-		return Optional.of(session.get()).orElseThrow(() -> new BusinessException("${error.session.not.found}"));
+		if (!session.isPresent()) {
+			throw new InvalidParameterException("error.session.not.found");
+		}
+		return session.get();
 	}
 
 	@Override
-	public Set<Session> findAllSessionByClosedAndCloseTime(Boolean closed, LocalDateTime closeTime) {
+	public Set<Session> findAllSessionByProcessedAndCloseTime(Boolean processed, LocalDateTime closeTime) {
 
-		return repository.findAllByClosedAndCloseTimeLessThanEqual(closed, closeTime);
+		return repository.findAllByProcessedAndCloseTimeLessThanEqual(processed, closeTime);
+	}
+
+	@Override
+	public Session closeSession(Session session) {
+		
+		session.setProcessed(Boolean.TRUE);
+		return repository.saveAndFlush(session);
 	}
 
 }

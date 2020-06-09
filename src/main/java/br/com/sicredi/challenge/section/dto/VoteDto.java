@@ -3,19 +3,22 @@ package br.com.sicredi.challenge.section.dto;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
+
+import org.hibernate.validator.constraints.br.CPF;
 
 public class VoteDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotEmpty(message = "{error.session.idSession.not.empty}")
+	@NotNull(message = "{error.vote.idSession.not.empty}")
 	private Long idSession;
 
-	@NotEmpty(message = "{error.session.cpf.not.empty}")
-	// TODO create validation CPF
+	@NotEmpty(message = "{error.vote.cpf.not.empty}")
+	@CPF(message = "{error.vote.cpf.invalid}")
 	private String cpf;
 
-	@NotEmpty(message = "{error.session.vote.not.empty}")
+	@NotNull(message = "{error.vote.vote.not.empty}")
 	private Boolean vote;
 
 	public VoteDto() {

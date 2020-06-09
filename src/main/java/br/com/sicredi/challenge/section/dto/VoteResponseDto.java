@@ -2,11 +2,12 @@ package br.com.sicredi.challenge.section.dto;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 public class VoteResponseDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	// TODO Change o name of id
 	private Long id;
 
 	private Boolean vote;
@@ -21,6 +22,7 @@ public class VoteResponseDto implements Serializable {
 		this.vote = vote;
 	}
 
+	@JsonProperty("code")
 	public Long getId() {
 		return id;
 	}

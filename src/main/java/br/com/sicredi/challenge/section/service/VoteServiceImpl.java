@@ -1,19 +1,27 @@
 package br.com.sicredi.challenge.section.service;
 
+import java.security.InvalidParameterException;
 import java.time.LocalDateTime;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
+import br.com.sicredi.challenge.section.client.UserInfoClient;
 import br.com.sicredi.challenge.section.dao.VoteRepository;
+import br.com.sicredi.challenge.section.dto.AssociateStatusDto;
+import br.com.sicredi.challenge.section.dto.StatusDto;
 import br.com.sicredi.challenge.section.entity.Associate;
 import br.com.sicredi.challenge.section.entity.Session;
 import br.com.sicredi.challenge.section.entity.Vote;
-import br.com.sicredi.challenge.section.exception.BusinessException;
 
+@Service
 public class VoteServiceImpl implements VoteService {
 
 	@Autowired
 	private VoteRepository repository;
+
+	@Autowired
+	private UserInfoClient client;
 
 	@Autowired
 	private SessionService service;
@@ -27,13 +35,18 @@ public class VoteServiceImpl implements VoteService {
 		Session session = service.findSession(idSession);
 
 		LocalDateTime now = LocalDateTime.now();
-		if (checkSessionIsOpen(now, session)) {
-			throw new BusinessException("${error.session.is.close}");
+		if (!checkSessionIsOpen(now, session)) {
+			throw new InvalidParameterException("error.session.is.close");
+		}
+
+		AssociateStatusDto status = client.getAssociateStatus(cpf);
+		if (StatusDto.UNABLE_TO_VOTE.equals(status.getStatus())) {
+			throw new InvalidParameterException("error.associate.cannot.vote");
 		}
 
 		Associate associate = associateService.findAndSaveAssociate(cpf);
 		if (hasAssociateVoted(associate, session)) {
-			throw new BusinessException("${error.associate.already.voted}");
+			throw new InvalidParameterException("error.associate.already.voted");
 		}
 
 		Vote ballot = new Vote();
@@ -48,7 +61,8 @@ public class VoteServiceImpl implements VoteService {
 
 		LocalDateTime openTime = session.getOpenTime();
 		LocalDateTime closeTime = session.getCloseTime();
-		return !now.isAfter(openTime) && !now.isBefore(closeTime);
+		Boolean processed = session.getProcessed();
+		return now.isAfter(openTime) && now.isBefore(closeTime) && !processed.booleanValue();
 	}
 
 	private boolean hasAssociateVoted(Associate associate, Session session) {

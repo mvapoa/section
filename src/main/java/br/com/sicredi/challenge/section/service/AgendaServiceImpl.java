@@ -1,13 +1,15 @@
 package br.com.sicredi.challenge.section.service;
 
+import java.security.InvalidParameterException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import br.com.sicredi.challenge.section.dao.AgendaRepository;
 import br.com.sicredi.challenge.section.entity.Agenda;
-import br.com.sicredi.challenge.section.exception.BusinessException;
 
+@Service
 public class AgendaServiceImpl implements AgendaService {
 
 	@Autowired
@@ -26,7 +28,10 @@ public class AgendaServiceImpl implements AgendaService {
 	public Agenda findAgenda(Long id) {
 
 		Optional<Agenda> agenda = repository.findById(id);
-		return Optional.of(agenda.get()).orElseThrow(() -> new BusinessException("${error.agenda.not.found}"));
+		if (!agenda.isPresent()) {
+			throw new InvalidParameterException("error.agenda.not.found");
+		}
+		return agenda.get();
 	}
 
 }

@@ -3,7 +3,7 @@ package br.com.sicredi.challenge.section.dto;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
-import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import br.com.sicredi.challenge.section.validation.CloseTimeThanNow;
 
@@ -11,7 +11,7 @@ public class SessionDto implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotEmpty(message = "{error.session.idAgenda.not.empty}")
+	@NotNull(message = "{error.session.idAgenda.not.null}")
 	private Long idAgenda;
 
 	@CloseTimeThanNow(message = "{error.session.closeTime.than.now}")
