@@ -1,0 +1,25 @@
+version: '3.1'
+services:
+   rabbitmq:
+      image: rabbitmq:management
+      ports:
+         - 5672:5672
+         - 15672:15672
+   dbpostgresql:
+      image: postgres
+      ports:
+         - 5432:5432
+      environment:
+         - POSTGRES_USER=postgres
+         - POSTGRES_PASSWORD=postgres
+         - POSTGRES_DB=section
+   section:
+      build: .
+      ports:
+         - 8001:8001
+      links:
+         - rabbitmq
+         - dbpostgresql
+      environment:
+         rabbit_host: rabbitmq
+         postgres_host: dbpostgresql
