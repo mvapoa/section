@@ -57,7 +57,7 @@ public class ResultControllerTest {
 		mockMvc.perform(get("/result/" + idSession))
 		.andDo(MockMvcResultHandlers.print()).andExpect(status().isOk())
 		.andExpect(jsonPath("$.code", is(result.getId().intValue())))
-		.andExpect(jsonPath("$.sessionId", is(result.getSession().getId().intValue())))
+		.andExpect(jsonPath("$.codeSession", is(result.getSession().getId().intValue())))
 		.andExpect(jsonPath("$.winner", is(result.getWinner())))
 		.andExpect(jsonPath("$.totalTrue", is(result.getTotalTrue())))
 		.andExpect(jsonPath("$.totalFalse", is(result.getTotalFalse())));
