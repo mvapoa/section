@@ -1,5 +1,15 @@
 # Assembleia de Votação
 
+### Tecnologias Utilizadas
+- Java 8
+- Spring Boot
+- Postgres
+- RabbitMQ
+- Swagger
+- Docker
+- Docker Compose
+- Gradle
+
 ### Pré-requisitos
 - O Docker deve estar instalado. Veja [como instalar o Docker aqui](https://docs.docker.com/engine/installation/).
 - O Docker Compose deve estar instalado. Veja [como instalar o Docker Compose aqui](https://docs.docker.com/compose/install/).
