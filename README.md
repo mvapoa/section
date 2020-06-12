@@ -1,4 +1,4 @@
-# Assembleia de Votação / Section
+# Section / Assembleia de Votação
 
 ## Technologies Used
 Bellow is the list of the used technologies for this project.
