@@ -12,9 +12,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import br.com.sicredi.challenge.section.dto.ResultResponseDto;
 import br.com.sicredi.challenge.section.entity.Result;
 import br.com.sicredi.challenge.section.service.ResultService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("/result")
+@Api(value = "Result")
 public class ResultController {
 
 	@Autowired
@@ -23,6 +26,7 @@ public class ResultController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@ApiOperation(value = "Get the result of a closed session")
 	@GetMapping("/{idSession}")
 	public ResponseEntity<?> getResult(@PathVariable("idSession") Long idSession) {
 

@@ -14,9 +14,12 @@ import br.com.sicredi.challenge.section.dto.AgendaDto;
 import br.com.sicredi.challenge.section.dto.AgendaResponseDto;
 import br.com.sicredi.challenge.section.entity.Agenda;
 import br.com.sicredi.challenge.section.service.AgendaService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("/agenda")
+@Api(value = "Agenda")
 public class AgendaController {
 
 	@Autowired
@@ -25,6 +28,7 @@ public class AgendaController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@ApiOperation(value = "Create a new agenda")
 	@PostMapping("/")
 	public ResponseEntity<?> createAgenda(@Valid @RequestBody AgendaDto agendaDto) {
 

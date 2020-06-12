@@ -14,9 +14,12 @@ import br.com.sicredi.challenge.section.dto.VoteDto;
 import br.com.sicredi.challenge.section.dto.VoteResponseDto;
 import br.com.sicredi.challenge.section.entity.Vote;
 import br.com.sicredi.challenge.section.service.VoteService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("/vote")
+@Api(value = "Vote")
 public class VoteController {
 
 	@Autowired
@@ -25,6 +28,7 @@ public class VoteController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@ApiOperation(value = "Provide a vote")
 	@PostMapping("/")
 	public ResponseEntity<?> vote(@Valid @RequestBody VoteDto voteDto) {
 

@@ -16,9 +16,12 @@ import br.com.sicredi.challenge.section.dto.SessionDto;
 import br.com.sicredi.challenge.section.dto.SessionResponseDto;
 import br.com.sicredi.challenge.section.entity.Session;
 import br.com.sicredi.challenge.section.service.SessionService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @Controller
 @RequestMapping("/session")
+@Api(value = "Session")
 public class SessionController {
 
 	@Autowired
@@ -27,6 +30,7 @@ public class SessionController {
 	@Autowired
 	private ModelMapper modelMapper;
 
+	@ApiOperation(value = "Open a new session")
 	@PostMapping("/open")
 	public ResponseEntity<?> openSession(@Valid @RequestBody SessionDto sessionDto) {
 

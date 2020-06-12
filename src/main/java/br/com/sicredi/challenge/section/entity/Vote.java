@@ -23,11 +23,11 @@ public class Vote implements Serializable {
 	@GeneratedValue
 	private Long id;
 
-	@OneToOne(fetch = FetchType.LAZY)
+	@OneToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "associate_id")
 	private Associate associate;
 
-	@ManyToOne(fetch = FetchType.LAZY)
+	@ManyToOne(fetch = FetchType.EAGER)
 	@JoinColumn(name = "session_id")
 	private Session session;
 
